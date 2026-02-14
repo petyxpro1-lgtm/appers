@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Appers Gold v3</title>
+    <title>Appers Gold v3 (Roulette)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -19,7 +19,8 @@
                     animation: {
                         'pop': 'pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
                         'float': 'float 3s ease-in-out infinite',
-                        'shimmer': 'shimmer 3s ease infinite'
+                        'shimmer': 'shimmer 3s ease infinite',
+                        'spin-fast': 'bg-scroll 0.5s linear infinite' // New animation for scrolling
                     },
                     keyframes: {
                         pop: { '0%': { transform: 'scale(0.9)', opacity: 0 }, '100%': { transform: 'scale(1)', opacity: 1 } },
@@ -64,6 +65,7 @@
         .fade-in { animation: pop 0.3s ease-out; }
         .logo-text { background: linear-gradient(to right, #fbbf24, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
+        /* NFT Rarities */
         .nft-bg-green { background: linear-gradient(135deg, #4ade80 0%, #16a34a 100%); }
         .nft-bg-blue { background: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%); }
         .nft-bg-red { background: linear-gradient(135deg, #f87171 0%, #dc2626 100%); }
@@ -108,7 +110,8 @@
         const NFT_CATALOG = [
             { id: 'banana', name: 'Банан', cost: 10, image: 'https://pngicon.ru/file/uploads/banan.png' },
             { id: 'doggy', name: 'Догги', cost: 50, image: 'https://transcode-v2.app.engoo.com/image/fetch/f_auto,c_lfill,w_300,dpr_3/https://assets.app.engoo.com/organizations/5d2656f1-9162-461d-88c7-b2505623d8cb/images/2YcjMiWiJMGI36fisbtlZJ.jpeg' },
-            { id: 'sonic', name: 'Sonic', cost: 1000, image: 'https://i.redd.it/lbujwupwym2c1.png', limit: 250 }
+            { id: 'sonic', name: 'Sonic', cost: 1000, image: 'https://i.redd.it/lbujwupwym2c1.png', limit: 15 },
+            { id: 'mopsik', name: 'Мопсик', cost: 6666, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7M2qn9KiO5os2UBTUVxYlZrKybRXiZsUyDQ&s', limit: 5 }
         ];
 
         const RARITY_MAP = {
@@ -150,7 +153,7 @@
                 Image: <><rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" /></>,
                 X: <><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></>,
                 Send: <><line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" /></>,
-                Settings: <><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" /></>,
+                Settings: <><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" /></>,
                 Moon: <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />,
                 Sun: <><circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" /><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" /><line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" /><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" /></>,
                 ArrowLeft: <><line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" /></>,
@@ -203,8 +206,8 @@
                             const canvas = document.createElement('canvas');
                             let width = img.width;
                             let height = img.height;
-                            const MAX_WIDTH = 500;
-                            const MAX_HEIGHT = 500;
+                            const MAX_WIDTH = 600;
+                            const MAX_HEIGHT = 600;
                             if (width > height) {
                                 if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
                             } else {
@@ -214,7 +217,7 @@
                             canvas.height = height;
                             const ctx = canvas.getContext('2d');
                             ctx.drawImage(img, 0, 0, width, height);
-                            onFileSelect(canvas.toDataURL('image/jpeg', 0.5));
+                            onFileSelect(canvas.toDataURL('image/jpeg', 0.6));
                         };
                         img.src = event.target.result;
                     };
@@ -424,7 +427,20 @@
             const [revealing, setRevealing] = useState(false);
             const [currentSpinBg, setCurrentSpinBg] = useState("nft-bg-green");
             const [error, setError] = useState(null);
+            // Array of all rarities for the visual loop
             const bgs = ["nft-bg-green", "nft-bg-blue", "nft-bg-red", "nft-bg-yellow", "nft-bg-gray", "nft-bg-black", "nft-bg-gold", "nft-bg-cosmic"];
+            
+            // Weighted array for the "roulette" visual effect (common appears more)
+            const weightedBgs = [
+                ...Array(20).fill("nft-bg-green"),
+                ...Array(10).fill("nft-bg-blue"),
+                ...Array(8).fill("nft-bg-red"),
+                ...Array(5).fill("nft-bg-yellow"),
+                ...Array(3).fill("nft-bg-gray"),
+                ...Array(2).fill("nft-bg-black"),
+                "nft-bg-gold",
+                "nft-bg-cosmic"
+            ];
 
             const startRevealing = () => {
                 if(balance < selected.cost) { setError(t.not_enough_money); setTimeout(()=>setError(null), 3000); return; }
@@ -435,22 +451,39 @@
                 
                 setRevealing(true);
                 let count = 0;
+                
+                // Roulette Animation Loop
                 const interval = setInterval(() => {
-                    setCurrentSpinBg(bgs[Math.floor(Math.random() * bgs.length)]);
+                    // Pick a random background from weighted list to simulate spinning wheel
+                    const randomBg = weightedBgs[Math.floor(Math.random() * weightedBgs.length)];
+                    setCurrentSpinBg(randomBg);
+                    
                     count++;
-                    if(count > 20) {
+                    if(count > 25) { // Run for ~2 seconds
                         clearInterval(interval);
+                        
+                        // Final Rarity Determination Logic
                         const roll = Math.random() * 100;
                         let rarity = "nft-bg-green";
-                        if(roll < 85) rarity = bgs[Math.floor(Math.random() * 5)]; 
-                        else if(roll < 95) rarity = "nft-bg-black"; 
-                        else if(roll < 99.7) rarity = "nft-bg-gold"; 
+                        if(roll < 45) rarity = "nft-bg-green";
+                        else if(roll < 65) rarity = "nft-bg-blue";
+                        else if(roll < 80) rarity = "nft-bg-red";
+                        else if(roll < 90) rarity = "nft-bg-yellow";
+                        else if(roll < 95) rarity = "nft-bg-gray";
+                        else if(roll < 99) rarity = "nft-bg-black";
+                        else if(roll < 99.7) rarity = "nft-bg-gold";
                         else rarity = "nft-bg-cosmic";
                         
-                        onSend(selected, sign, rarity);
-                        setRevealing(false); setSelected(null); setSign("");
+                        // Set final visual state and send
+                        setCurrentSpinBg(rarity); 
+                        setTimeout(() => { // Small pause to show the win
+                            onSend(selected, sign, rarity);
+                            setRevealing(false); 
+                            setSelected(null); 
+                            setSign("");
+                        }, 500);
                     }
-                }, 80);
+                }, 80); // Fast switching
             };
 
             if(!isOpen) return null;
@@ -482,10 +515,12 @@
                             </div>
                         ) : (
                             <div className="py-10 text-center flex flex-col items-center">
-                                <div className={`w-32 h-32 rounded-3xl ${currentSpinBg} flex items-center justify-center shadow-2xl transition-all duration-75`}>
-                                    <img src={selected.image} className="w-24 h-24 object-contain drop-shadow-md"/>
+                                {/* ROULETTE VISUAL CONTAINER */}
+                                <div className={`w-32 h-32 rounded-3xl ${currentSpinBg} flex items-center justify-center shadow-2xl transition-all duration-100 transform scale-110 border-4 border-white/20`}>
+                                    <img src={selected.image} className="w-24 h-24 object-contain drop-shadow-md animate-bounce"/>
                                 </div>
-                                <p className="mt-6 font-bold text-lg dark:text-white animate-pulse">Генерация редкости...</p>
+                                <div className="mt-6 font-bold text-lg dark:text-white animate-pulse">Крутим рулетку...</div>
+                                <div className="text-xs text-gray-500 mt-2">Удачи! 🍀</div>
                             </div>
                         )}
                     </div>
@@ -849,9 +884,6 @@
                 // Apply stats update (ensure non-negative)
                 if (Object.keys(statsUpdate).length > 0) {
                     const statsRef = window.firebaseOps.doc(window.db, 'shop_stats', 'main');
-                    // We need to read current first to be safe or just trust the local calculation if we assume single user flow.
-                    // Ideally use increment(-1) but for simplicity we set the value.
-                    // Better: loop and set.
                     const finalStats = { ...shopStats };
                     Object.keys(statsUpdate).forEach(key => {
                         finalStats[key] = Math.max(0, statsUpdate[key]);
