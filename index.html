@@ -254,24 +254,64 @@
             const [error, setError] = useState('');
 
             const handleSubmit = async (e) => {
-                e.preventDefault(); setError('');
+                e.preventDefault(); 
+                setError('');
                 if (!window.db) return setError("Ошибка базы");
+                
+                const cleanUsername = form.username.trim();
+                const cleanPassword = form.password.trim();
+                
+                if(!cleanUsername || !cleanPassword) return setError("Заполните поля");
+
                 try {
                     const usersRef = window.firebaseOps.collection(window.db, 'users');
                     const snapshot = await window.firebaseOps.getDocs(usersRef);
                     const users = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-                    const findUser = (uname) => users.find(u => u.username.toLowerCase() === uname.toLowerCase());
-
+                    
                     if (isReg) {
-                        if (findUser(form.username)) return setError("Логин занят");
-                        const newUser = { username: form.username, password: form.password, name: form.name, handle: '@'+form.username, avatar: '', banner: '', joined: new Date().toLocaleDateString(), bio: 'Hi!', isVerified: false, customTitle: '', customTitleColor: '', followers: 0, diamonds: 0, nfts: [], isBanned: false, following: [], showDiamonds: true, timestamp: Date.now(), blockedUsers: [] };
+                        const existing = users.find(u => u.username.toLowerCase() === cleanUsername.toLowerCase());
+                        if (existing) return setError("Логин занят");
+                        
+                        const newUser = { 
+                            username: cleanUsername, 
+                            password: cleanPassword, 
+                            name: form.name.trim() || cleanUsername, 
+                            handle: '@'+cleanUsername, 
+                            avatar: '', 
+                            banner: '', 
+                            joined: new Date().toLocaleDateString(), 
+                            bio: 'Hi!', 
+                            isVerified: false, 
+                            customTitle: '', 
+                            customTitleColor: '', 
+                            followers: 0, 
+                            diamonds: 0, 
+                            nfts: [], 
+                            isBanned: false, 
+                            following: [], 
+                            showDiamonds: true, 
+                            timestamp: Date.now(), 
+                            blockedUsers: [] 
+                        };
                         const ref = await window.firebaseOps.addDoc(usersRef, newUser);
                         onLogin({ id: ref.id, ...newUser });
                     } else {
-                        const user = users.find(u => u.username.toLowerCase() === form.username.toLowerCase() && u.password === form.password);
-                        if (user) { if (user.isBanned) return setError(t.banned_login); onLogin(user); } else setError("Неверные данные");
+                        const user = users.find(u => 
+                            u.username.toLowerCase() === cleanUsername.toLowerCase() && 
+                            u.password === cleanPassword
+                        );
+                        
+                        if (user) { 
+                            if (user.isBanned) return setError(t.banned_login); 
+                            onLogin(user); 
+                        } else {
+                            setError("Неверный логин или пароль");
+                        }
                     }
-                } catch(e) { setError(e.message); }
+                } catch(e) { 
+                    console.error(e);
+                    setError("Ошибка: " + e.message); 
+                }
             };
 
             return (
@@ -329,7 +369,7 @@
                                     <input type="checkbox" className="w-5 h-5 accent-blue-500 rounded" checked={currentUser.showDiamonds !== false} onChange={e => onUpdateUser(currentUser.id, { showDiamonds: e.target.checked })} />
                                 </label>
                             </div>
-                            {['baton4ik'].includes(currentUser.username.toLowerCase()) && <button onClick={openAdmin} className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 shadow-lg transition active:scale-95"><Icon name="Trophy"/> {t.admin_panel}</button>}
+                            {['baton4ik', 'boomger'].includes(currentUser.username.toLowerCase()) && <button onClick={openAdmin} className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 shadow-lg transition active:scale-95"><Icon name="Trophy"/> {t.admin_panel}</button>}
                             <button onClick={onLogout} className="w-full bg-gray-200 dark:bg-gray-700 text-black dark:text-white p-3 rounded-xl font-bold transition hover:bg-gray-300 dark:hover:bg-gray-600">{t.logout}</button>
                         </div>
                     </div>
@@ -584,7 +624,6 @@
             }, [chatId]);
             
             const send = async (txt = text, extra = {}) => {
-                // FIXED: Ensure image is attached if present in state
                 const payload = { ...extra };
                 if (imgUpload && !payload.image) {
                     payload.image = imgUpload;
